@@ -5,6 +5,7 @@ from sqlalchemy import (
     JSON,
     TIMESTAMP,
     Column,
+    DateTime,
     ForeignKey,
     Integer,
     MetaData,
@@ -36,4 +37,13 @@ users = Table(
     Column('is_active', BOOLEAN, nullable=False, default=True),
     Column('is_superuser', BOOLEAN, nullable=False, default=False),
     Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'))
+)
+
+token_blacklist = Table(
+    'token_blacklist',
+    metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('token', String(500), nullable=False),
+    Column('expires_at', DateTime, nullable=False),
+    Column('user_id', Integer, ForeignKey('users.id', ondelete='CASCADE'))
 )
