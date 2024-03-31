@@ -20,6 +20,8 @@ python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.9"
 sqlmodel = "^0.0.16"
+alembic-utils = "^0.8.2"
+alembic-postgresql-enum = "^1.1.2"
 
 [build-system]
 requires = ["poetry-core"]
