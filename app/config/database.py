@@ -1,5 +1,3 @@
-from typing import Any, Generator
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -14,7 +12,7 @@ SessionLocal = sessionmaker(
 )
 
 
-def get_db() -> Generator[SessionLocal | Any | None]:  # type: ignore
+def get_db():  # type: ignore
     db = SessionLocal()
     try:
         yield db

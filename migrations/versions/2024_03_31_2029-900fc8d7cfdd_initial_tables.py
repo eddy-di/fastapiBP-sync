@@ -1,8 +1,8 @@
-"""users and token tables
+"""initial tables
 
-Revision ID: 5eb14d24222c
+Revision ID: 900fc8d7cfdd
 Revises:
-Create Date: 2024-03-31 13:53:12.837794
+Create Date: 2024-03-31 20:29:16.531673
 
 """
 from typing import Sequence
@@ -12,7 +12,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '5eb14d24222c'
+revision: str = '900fc8d7cfdd'
 down_revision: str | None = None
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None

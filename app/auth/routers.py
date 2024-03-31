@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import Depends
@@ -5,9 +6,11 @@ from fastapi.routing import APIRouter
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from app.auth.schemas import User, UserCreate
+from app.auth.schemas.token import Login, TokenPair
+from app.auth.schemas.users import User, UserCreate
+from app.auth.utils import authenticate_user, create_token
 from app.config.database import get_db
-from app.models.users import Users
+from app.models.models import Users
 
 auth = APIRouter(
     tags=['Auth'],
@@ -29,7 +32,7 @@ def register(
 ) -> dict[str, Any]:
     new_user = Users(
         username=schema.username,
-        password=schema.password,
+        password=bcrypt_context.hash(schema.password),
         email=schema.email,
         first_name=schema.first_name,
         last_name=schema.last_name,
@@ -43,7 +46,6 @@ def register(
     return {
         'id': new_user.id,
         'username': new_user.username,
-        'password': new_user.password,
         'email': new_user.email,
         'first_name': new_user.first_name,
         'last_name': new_user.last_name,
@@ -51,3 +53,26 @@ def register(
         'is_superuser': new_user.is_superuser,
         'role': new_user.role,
     }
+
+
+@auth.post(
+    '/token',
+    response_model=TokenPair
+)
+def obtain_token_pair(
+    schema: Login,
+    db: Annotated[Session, Depends(get_db)]
+):
+    user = authenticate_user(
+        username=schema.username,
+        password=schema.password,
+        db=db
+    )
+
+    access_token = create_token(user.username, user.id, timedelta(hours=1))
+    refresh_token = create_token(user.username, user.id, timedelta(days=1))
+
+    return TokenPair(
+        access=access_token,
+        refresh=refresh_token
+    )
