@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.schemas.token import Login, TokenPair
 from app.auth.schemas.users import User, UserCreate
-from app.auth.utils import authenticate_user, create_token
+from app.auth.utils import authenticate_user, create_token, get_current_user
 from app.config.database import get_db
 from app.models.models import Users
 
@@ -69,10 +69,23 @@ def obtain_token_pair(
         db=db
     )
 
-    access_token = create_token(user.username, user.id, timedelta(hours=1))
-    refresh_token = create_token(user.username, user.id, timedelta(days=1))
+    access_token = create_token(user.username, user.id, user.role.value, timedelta(minutes=5))
+    refresh_token = create_token(user.username, user.id, user.role.value, timedelta(days=1))
 
     return TokenPair(
         access=access_token,
         refresh=refresh_token
     )
+
+
+@auth.get(
+    '/me',
+    response_model=User,
+    summary='Authenticated user'
+)
+def get_auth_current_user(
+    user: Annotated[Users, Depends(get_current_user)],
+    db: Session = Depends(get_db)
+):
+    user = db.query(Users).filter(Users.id == user.id).first()
+    return user
