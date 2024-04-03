@@ -68,3 +68,14 @@ async def get_current_user(
     user = get_user_from_db(username=username, db=db)
 
     return user
+
+
+def get_current_token(
+    token: Annotated[str, Depends(oauth2_bearer)]
+) -> str:
+    return token
+
+
+def decode_token(token: str):
+    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    return payload

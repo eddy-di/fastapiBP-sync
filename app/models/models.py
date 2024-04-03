@@ -1,19 +1,9 @@
 from datetime import datetime, timezone
 from enum import Enum
 
-from sqlalchemy import (
-    TIMESTAMP,
-    Boolean,
-    Column,
-    DateTime,
-    ForeignKey,
-    Integer,
-    MetaData,
-    String,
-)
+from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, MetaData, String
 from sqlalchemy.dialects.postgresql import ENUM
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 
 Base = declarative_base(metadata=MetaData())
 
@@ -37,15 +27,9 @@ class Users(Base):  # type: ignore
     is_superuser = Column(Boolean, nullable=False, default=False)
     role = Column(ENUM(RoleEnum, name='role_enum'), default=RoleEnum.USER)
 
-    token = relationship('TokenBlacklist', back_populates='user')
-
 
 class TokenBlacklist(Base):  # type: ignore
     __tablename__ = 'token_blacklist'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     token = Column(String(500), nullable=False)
-    expires_at = Column(DateTime, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))
-
-    user = relationship('Users', back_populates='token')
